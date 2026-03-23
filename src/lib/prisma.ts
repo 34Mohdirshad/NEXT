@@ -16,7 +16,7 @@ const createPrismaClient = () => {
       url,
       authToken,
     });
-    const adapter = new PrismaLibSql(libsql);
+    const adapter = new PrismaLibSql(libsql as any);
     return new PrismaClient({ adapter });
   }
 
