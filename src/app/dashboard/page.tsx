@@ -3,11 +3,30 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import DashboardClient from "./dashboard-client";
 
-export default async function DashboardPage() {
-  const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
+export const dynamic = "force-dynamic";
 
-  const clerkUser = await currentUser();
+export default async function DashboardPage() {
+  let userId: string | null = null;
+  let clerkUser = null;
+  
+  try {
+    const authData = await auth();
+    userId = authData.userId;
+    clerkUser = await currentUser();
+  } catch (err: any) {
+    console.error("Clerk auth failed on dashboard:", err);
+    return (
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-[#0a0a0f] text-white p-8 text-center">
+        <h2 className="text-2xl font-bold text-red-500 mb-4">Authentication Error</h2>
+        <p className="text-gray-300 max-w-md">
+           The application crashed because Clerk Authentication is missing environment variables.
+           If you are on Vercel, please go to your Project Settings &gt; Environment Variables and add <b>NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</b> and <b>CLERK_SECRET_KEY</b>.
+        </p>
+      </div>
+    );
+  }
+
+  if (!userId) redirect("/sign-in");
 
   let workflows = [];
   try {
