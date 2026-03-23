@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
+import { PrismaLibSQL } from "@prisma/adapter-libsql";
 import { createClient } from "@libsql/client";
 import path from "path";
 
@@ -17,7 +17,7 @@ const createPrismaClient = () => {
       url,
       authToken,
     });
-    const adapter = new PrismaLibSql(libsql as any);
+    const adapter = new PrismaLibSQL(libsql as any);
     return new PrismaClient({ adapter });
   }
 
