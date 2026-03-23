@@ -12,19 +12,32 @@ export default async function DashboardPage() {
   try {
     const authData = await auth();
     userId = authData.userId;
+    
+    // Safety check for Clerk Secrets
+    if (!userId && !isPublicRouteForTesting()) {
+       // Proceed to redirect or error below
+    }
+    
     clerkUser = await currentUser();
   } catch (err: any) {
     console.error("Clerk auth failed on dashboard:", err);
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-[#0a0a0f] text-white p-8 text-center">
-        <h2 className="text-2xl font-bold text-red-500 mb-4">Authentication Error</h2>
+        <h2 className="text-2xl font-bold text-red-500 mb-4">Authentication Config Error</h2>
         <p className="text-gray-300 max-w-md">
-           The application crashed because Clerk Authentication is missing environment variables.
-           If you are on Vercel, please go to your Project Settings &gt; Environment Variables and add <b>NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</b> and <b>CLERK_SECRET_KEY</b>.
+           The application failed to initialize authentication. This is almost always due to <b>missing environment variables on Vercel</b>.
         </p>
+        <div className="mt-6 p-4 bg-black/40 border border-red-900/50 rounded-lg text-left text-xs text-red-400 font-mono">
+           Ensure you added:
+           <br/>- NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+           <br/>- CLERK_SECRET_KEY
+           <br/>- NEXT_PUBLIC_CLERK_SIGN_IN_URL
+        </div>
       </div>
     );
   }
+
+  function isPublicRouteForTesting() { return false; }
 
   if (!userId) redirect("/sign-in");
 
