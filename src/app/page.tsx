@@ -57,7 +57,14 @@ const features = [
 ];
 
 export default async function HomePage() {
-  const { userId } = await auth();
+  let userId: string | null = null;
+  try {
+     const authData = await auth();
+     userId = authData.userId;
+  } catch (err) {
+    console.error("Clerk auth failed. Environment variables might be missing.", err);
+  }
+
   if (userId) redirect("/dashboard");
 
   return (
