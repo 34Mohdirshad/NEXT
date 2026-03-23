@@ -218,7 +218,14 @@ export default function RightSidebar({ workflowId, executionId }: RightSidebarPr
       try {
         const res = await fetch(`/api/workflows/${workflowId}/executions`);
         const data = await res.json();
-        setExecutions(data ?? []);
+        if (Array.isArray(data)) {
+          setExecutions(data);
+        } else if (data && data.error) {
+          console.error("API Error fetching executions:", data.error);
+          setExecutions([]);
+        } else {
+          setExecutions([]);
+        }
       } catch {
         console.error("Failed to fetch executions");
       } finally {
@@ -229,7 +236,7 @@ export default function RightSidebar({ workflowId, executionId }: RightSidebarPr
     fetchExecutions();
 
     // Poll for updates when executing
-    const interval = setInterval(fetchExecutions, 3000);
+    const interval = setInterval(fetchExecutions, 8000);
     return () => clearInterval(interval);
   }, [workflowId, executionId]);
 

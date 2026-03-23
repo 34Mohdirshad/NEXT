@@ -213,7 +213,7 @@ async function executeLLM(inputs: Record<string, any>): Promise<Record<string, a
 
   // Format multimodal inputs for Gemini
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" }); // Use stable alias for flash
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }, { apiVersion: "v1" });
   
   const systemPrompt = inputs.system_prompt || "";
   const userMessage = inputs.user_message || "";

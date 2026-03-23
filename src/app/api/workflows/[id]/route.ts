@@ -15,10 +15,10 @@ export async function GET(
 ) {
   try {
     const { userId } = await auth();
-    if (!userId) return new NextResponse("Unauthorized", { status: 401 });
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const user = await prisma.user.findUnique({ where: { clerkId: userId } });
-    if (!user) return new NextResponse("User not found", { status: 404 });
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
     const { id } = await params;
     const workflow = await prisma.workflow.findFirst({
@@ -31,11 +31,11 @@ export async function GET(
       },
     });
 
-    if (!workflow) return new NextResponse("Not found", { status: 404 });
+    if (!workflow) return NextResponse.json({ error: "Workflow not found" }, { status: 404 });
     return NextResponse.json(workflow);
   } catch (error) {
     console.error("[WORKFLOW_GET]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }
 
@@ -45,10 +45,10 @@ export async function PUT(
 ) {
   try {
     const { userId } = await auth();
-    if (!userId) return new NextResponse("Unauthorized", { status: 401 });
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const user = await prisma.user.findUnique({ where: { clerkId: userId } });
-    if (!user) return new NextResponse("User not found", { status: 404 });
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
     const { id } = await params;
     const body = await request.json();
@@ -69,7 +69,7 @@ export async function PUT(
     return NextResponse.json(workflow);
   } catch (error) {
     console.error("[WORKFLOW_PUT]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }
 
@@ -79,16 +79,16 @@ export async function DELETE(
 ) {
   try {
     const { userId } = await auth();
-    if (!userId) return new NextResponse("Unauthorized", { status: 401 });
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const user = await prisma.user.findUnique({ where: { clerkId: userId } });
-    if (!user) return new NextResponse("User not found", { status: 404 });
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
     const { id } = await params;
     await prisma.workflow.delete({ where: { id, userId: user.id } });
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error("[WORKFLOW_DELETE]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }

@@ -12,7 +12,7 @@ const createSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
-    if (!userId) return new NextResponse("Unauthorized", { status: 401 });
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const user = await prisma.user.findUnique({ where: { clerkId: userId } });
     if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth();
-    if (!userId) return new NextResponse("Unauthorized", { status: 401 });
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const user = await prisma.user.findUnique({ where: { clerkId: userId } });
     if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });

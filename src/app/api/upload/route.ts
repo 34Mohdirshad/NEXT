@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
-    if (!userId) return new NextResponse("Unauthorized", { status: 401 });
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const formData = await request.formData();
     const file = formData.get("file") as File;
@@ -28,6 +28,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: any) {
     console.error("[UPLOAD_ERROR]", error);
-    return new NextResponse(error.message || "Internal Error", { status: 500 });
+    return NextResponse.json({ error: error.message || "Internal Error" }, { status: 500 });
   }
 }

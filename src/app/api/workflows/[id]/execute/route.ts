@@ -18,10 +18,10 @@ export async function POST(
 ) {
   try {
     const { userId } = await auth();
-    if (!userId) return new NextResponse("Unauthorized", { status: 401 });
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const user = await prisma.user.findUnique({ where: { clerkId: userId } });
-    if (!user) return new NextResponse("User not found", { status: 404 });
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
     const { id: workflowId } = await params;
     const body = await request.json();
@@ -157,7 +157,7 @@ export async function POST(
     });
   } catch (error: any) {
     console.error("[WORKFLOW_EXECUTE]", error);
-    return new NextResponse(error?.message || "Internal Error", { status: 500 });
+    return NextResponse.json({ error: error?.message || "Internal Error" }, { status: 500 });
   }
 }
 
@@ -209,14 +209,14 @@ async function executeLLM(
 
   const { GoogleGenerativeAI } = await import("@google/generative-ai");
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }, { apiVersion: "v1" });
 
   const systemPrompt = inputs.system_prompt || data.systemPrompt || "";
   const userMessage = inputs.user_message || data.userMessage || "";
 
   const promptParts: any[] = [];
   if (systemPrompt) promptParts.push(`System Instructions:\n${systemPrompt}\n\n---\n`);
-  promptParts.push(userMessage);
+  promptParts.push(userMessage || "No message provided.");
 
   // Attach images if provided
   const imageUrls = [inputs.image_input_1, inputs.image_input_2, inputs.image_input_3].filter(Boolean);

@@ -58,6 +58,8 @@ model WorkflowExecution {
   user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   nodeLogs    NodeExecutionLog[]
 
+  @@index([workflowId])
+  @@index([userId])
   @@map("workflow_executions")
 }
 
@@ -77,6 +79,7 @@ model NodeExecutionLog {
 
   execution WorkflowExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
 
+  @@index([executionId])
   @@map("node_execution_logs")
 }
 
